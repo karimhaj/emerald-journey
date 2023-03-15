@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect, SetStateAction } from "react";
+import VipArea from "../components/VipArea";
 import axios from "axios";
 
 export default function Home() {
@@ -9,12 +10,14 @@ export default function Home() {
   const [list, setList] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [notify, setNotify] = useState(false);
+  const [journeyArea, setJourneyArea] = useState(true);
+  const [vipArea, setVipArea] = useState(false);
 
   //const dummyList = ["first", "second", "three", "four", "five"];
 
   async function getListData() {
     const response = await axios.get(
-      "https://expenses-database-368b0-default-rtdb.europe-west1.firebasedatabase.app//comments.json"
+      "https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app///comments.json"
     );
     setList(Object.values(response.data));
   }
@@ -35,9 +38,14 @@ export default function Home() {
 
   async function handleSubmit() {
     try {
-      if (newComment !== "") {
+      if (newComment.toLowerCase() === "vip area") {
+        setJourneyArea(false);
+        setVipArea(true);
+        return;
+      }
+      if (newComment !== "" && newComment !== "vip area") {
         axios.post(
-          "https://expenses-database-368b0-default-rtdb.europe-west1.firebasedatabase.app//comments.json",
+          "https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app///comments.json",
           { title: newComment }
         );
 
@@ -58,38 +66,41 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/pokeball.ico" />
       </Head>
-      <div className="box">
-        <div className="top-part">
-          <h1>Emerald Journey</h1>
-          <div className="random-pick">{randomPick}</div>
-          <button
-            className="button"
-            onClick={() => {
-              let choice = randomChoice(list) || "";
-              setRandomPick("rullo di tamburi...");
-              setTimeout(() => setRandomPick(choice), 3000);
-            }}
-          >
-            Let&apos;s begin!
-          </button>
+      {journeyArea && (
+        <div className="box">
+          <div className="top-part">
+            <h1>Emerald Journey</h1>
+            <div className="random-pick">{randomPick}</div>
+            <button
+              className="button"
+              onClick={() => {
+                let choice = randomChoice(list) || "";
+                setRandomPick("rullo di tamburi...");
+                setTimeout(() => setRandomPick(choice), 3000);
+              }}
+            >
+              Let&apos;s begin!
+            </button>
+          </div>
+          <div className="input-container">
+            <textarea
+              placeholder="Write a new comment here..."
+              className="input"
+              rows={6}
+              onChange={(e) => {
+                e.preventDefault();
+                setNewComment(e.target.value);
+              }}
+              value={newComment}
+            />
+            <button className="submit-button" onClick={() => handleSubmit()}>
+              Submit
+            </button>
+            {notify && <div className="notify">Sent Succesfully!</div>}
+          </div>
         </div>
-        <div className="input-container">
-          <textarea
-            placeholder="Write a new comment here..."
-            className="input"
-            rows={6}
-            onChange={(e) => {
-              e.preventDefault();
-              setNewComment(e.target.value);
-            }}
-            value={newComment}
-          />
-          <button className="submit-button" onClick={() => handleSubmit()}>
-            Submit
-          </button>
-          {notify && <div className="notify">Sent Succesfully!</div>}
-        </div>
-      </div>
+      )}
+      {vipArea && <VipArea />}
     </>
   );
 }
