@@ -1,9 +1,9 @@
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import axios from "axios";
 
 export default function Home() {
-  const [randomPick, setRandomPick] = useState(
+  const [randomPick, setRandomPick] = useState<string>(
     "Clicca qui sotto per iniziare!"
   );
   const [list, setList] = useState([]);
@@ -23,12 +23,12 @@ export default function Home() {
     getListData();
   }, []);
 
-  function randomChoice() {
-    const randomNumber = Math.random() * list.length;
+  function randomChoice(someList: { title: string }[]) {
+    const randomNumber = Math.random() * someList.length;
     let choice;
 
     for (let i = 0; i < randomNumber; i++) {
-      choice = list[i].title;
+      choice = someList[i].title;
     }
     return choice;
   }
@@ -65,7 +65,7 @@ export default function Home() {
           <button
             className="button"
             onClick={() => {
-              let choice = randomChoice();
+              let choice = randomChoice(list) || "";
               setRandomPick("rullo di tamburi...");
               setTimeout(() => setRandomPick(choice), 3000);
             }}
