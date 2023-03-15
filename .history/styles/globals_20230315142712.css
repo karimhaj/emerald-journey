@@ -1,0 +1,13 @@
+.box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.random-pick {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    border: 2px solid black;
+    padding: 50px;
+}

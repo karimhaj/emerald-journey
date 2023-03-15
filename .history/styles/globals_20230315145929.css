@@ -1,0 +1,34 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.random-pick {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  border: 2px solid black;
+  padding: 50px;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  border: 2px solid black;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.input-container {
+  padding: 30px;
+  border: 2px solid black;
+  displ
+}
+
+.input {
+  padding: 10px;
+  border: 2px solid black;
+  width: 100%;
+}
