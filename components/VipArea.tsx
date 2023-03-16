@@ -30,6 +30,7 @@ function VipArea() {
 
   async function refresh() {
     const data = await getData();
+    //@ts-ignore
     setCommentList(data);
   }
 
