@@ -7,33 +7,49 @@ export default function Home() {
   const [randomPick, setRandomPick] = useState<string>(
     "Clicca qui sotto per iniziare!"
   );
-  const [list, setList] = useState([]);
+  const [list, setList] = useState([{ id: 1, title: "si comincia!" }]);
   const [newComment, setNewComment] = useState("");
   const [notify, setNotify] = useState(false);
   const [journeyArea, setJourneyArea] = useState(true);
   const [vipArea, setVipArea] = useState(false);
+  const [randomId, setRandomId] = useState("");
 
   //const dummyList = ["first", "second", "three", "four", "five"];
 
   async function getListData() {
     const response = await axios.get(
-      "https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app///comments.json"
+      "https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app//comments.json"
     );
-    setList(Object.values(response.data));
+    const data = response.data;
+    const newList = [];
+
+    for (const key in data) {
+      const listItem = {
+        id: key,
+        title: data[key].title,
+      };
+
+      newList.push(listItem);
+    }
+
+    //@ts-ignore
+    setList(newList);
   }
 
   useEffect(() => {
     getListData();
   }, []);
 
-  function randomChoice(someList: { title: string }[]) {
+  function randomChoice(someList: { title: string; id: string }[]) {
     const randomNumber = Math.random() * someList.length;
-    let choice;
+    let pickObj = { choice: "", id: "" };
 
     for (let i = 0; i < randomNumber; i++) {
-      choice = someList[i].title;
+      pickObj.choice = someList[i].title;
+      pickObj.id = someList[i].id;
     }
-    return choice;
+    console.log(pickObj.id);
+    return pickObj;
   }
 
   async function handleSubmit() {
@@ -45,7 +61,7 @@ export default function Home() {
       }
       if (newComment !== "" && newComment !== "vip area") {
         axios.post(
-          "https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app///comments.json",
+          "https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app//comments.json",
           { title: newComment }
         );
 
@@ -56,6 +72,26 @@ export default function Home() {
       console.log(e);
     }
     setNewComment("");
+  }
+
+  async function deleteItem(id: string) {
+    try {
+      if (list.length > 1) {
+        axios.delete(
+          `https://mybase-72f82-default-rtdb.europe-west1.firebasedatabase.app//comments/${id}.json`
+        );
+
+        setRandomPick(
+          "your item was deleted! click on the button below for new challenges"
+        );
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  function addItemHandler() {
+    handleSubmit();
   }
 
   return (
@@ -71,16 +107,32 @@ export default function Home() {
           <div className="top-part">
             <h1>Emerald Journey</h1>
             <div className="random-pick">{randomPick}</div>
-            <button
-              className="button"
-              onClick={() => {
-                let choice = randomChoice(list) || "";
-                setRandomPick("rullo di tamburi...");
-                setTimeout(() => setRandomPick(choice), 3000);
-              }}
-            >
-              Let&apos;s begin!
-            </button>
+            <div className="btnContainer">
+              <button
+                className="button"
+                onClick={() => {
+                  getListData();
+                  //@ts-ignore
+                  let choice = randomChoice(list) || "";
+                  setRandomPick("rullo di tamburi...");
+                  setTimeout(() => {
+                    setRandomPick(choice.choice);
+                    setRandomId(choice.id);
+                  }, 3000);
+                }}
+              >
+                Let&apos;s begin!
+              </button>
+              <button
+                className="button delete"
+                onClick={() => {
+                  deleteItem(randomId);
+                  getListData();
+                }}
+              >
+                Delete
+              </button>
+            </div>
           </div>
           <div className="input-container">
             <textarea
@@ -93,7 +145,7 @@ export default function Home() {
               }}
               value={newComment}
             />
-            <button className="submit-button" onClick={() => handleSubmit()}>
+            <button className="submit-button" onClick={() => addItemHandler()}>
               Submit
             </button>
             {notify && <div className="notify">Sent Succesfully!</div>}

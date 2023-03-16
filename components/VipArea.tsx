@@ -14,7 +14,7 @@ async function getData() {
   }
 }
 
-async function postData(comment) {
+async function postData(comment: string) {
   try {
     if (comment !== "") {
       axios.post(url, { text: comment });
@@ -41,7 +41,7 @@ function VipArea() {
     <>
       <div className="vipContainer">
         <div className="vipMain">
-          {commentList.map((item, i) => (
+          {commentList.map((item: { text: string }, i) => (
             <p key={i} className={"vipMessage"}>
               {item.text}
             </p>
